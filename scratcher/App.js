@@ -56,7 +56,7 @@ class Intro extends React.Component {
             fontFamily: 'RGO-SemiBold',
             fontSize: 48,
           }}>
-          This is the Ghost Tube Player
+          SCRATCHER
         </p>
         <p
           style={{

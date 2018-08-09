@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-node --experimental-repl-await -i -e "ldApi = require('.'); Object.assign(global, ldApi);"
+node --experimental-repl-await -i -e "ldApi = require('.'); Object.assign(global, ldApi); flat=require('./flat'); itches=require('./itches');"
