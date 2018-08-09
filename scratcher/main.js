@@ -29,6 +29,7 @@ app.on('ready', () => {
     // mainWindow.webContents.send('ping', 'keyup!')
   });
   iohook.on('keypress', (ke) => {
+    // console.log("keypress", ke);
     mainWindow.webContents.send('ihkeypress', ke);
   })
   // iohook.on('mousewheel', eventHandler);

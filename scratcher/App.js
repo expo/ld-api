@@ -1,7 +1,7 @@
 let React = require('react');
 let Markdown = require('react-markdown');
 
-let itches = require('./itches');
+let itches = require('../itches');
 
 let { ipcRenderer } = require('electron');
 
@@ -65,9 +65,9 @@ class Intro extends React.Component {
             fontSize: 30,
             padding: 15,
           }}>
-          Hit TAB to show instructions and to navigate to other games.
+          Hit TAB to show/hide instructions and to navigate to other games.
           <br />
-          Hit ENTER while holding tab to go to the next game.
+          Hit ENTER while the overlay is up to go to another game.
           <br />
         </p>
         <p
@@ -97,23 +97,28 @@ class App extends React.Component {
 
   componentDidMount() {
     ipcRenderer.on('ihkeydown', (event, ke) => {
-      if (ke.keycode === 15) {
-        // console.log('tab down');
-        this.setState({ overlayShown: true });
-      }
+      // if (ke.keycode === 15) {
+      //   // console.log('tab down');
+      //   this.setState({ overlayShown: true });
+      // }
       // console.log('keydown:', ke);
     });
     ipcRenderer.on('ihkeyup', (event, ke) => {
-      if (ke.keycode === 15) {
-        // console.log('tab up');
-        this.setState({ overlayShown: false });
-      }
+      // if (ke.keycode === 15) {
+      //   // console.log('tab up');
+      //   this.setState({ overlayShown: false });
+      // }
       // console.log('keyup:', ke);
     });
+
     ipcRenderer.on('ihkeypress', (event, ke) => {
       // console.log('keypress:', ke);
       if (ke.keychar === 13) {
         // console.log('ENTER');
+      }
+
+      if (ke.keychar === 9) {
+        this.setState({ overlayShown: !this.state.overlayShown });
       }
       if (ke.keychar === 13 && this.state.overlayShown) {
         console.log('Switch games');
@@ -125,6 +130,10 @@ class App extends React.Component {
   }
 
   render() {
+    let go = (game, gameIndex) => {
+      console.log('go! to ' + gameIndex);
+      this.setState({ gameIndex });
+    };
     if (this.state.startScreen) {
       return (
         <Intro
@@ -178,14 +187,15 @@ class App extends React.Component {
         )}
         {this.state.overlayShown && (
           <NextOverlay
+            go={go}
             game={game}
             style={{
               fontFamily: 'Sansation-Light',
               position: 'absolute',
               zIndex: 30,
               backgroundColor: 'aliceblue',
-              width: 300,
-              height: 600,
+              width: 350,
+              height: '100%',
               top: 0,
               right: 0,
             }}
@@ -198,7 +208,52 @@ class App extends React.Component {
 
 class NextOverlay extends React.Component {
   render() {
-    return <div style={this.props.style}>This is where you choose what to play next</div>;
+    return (
+      <div style={this.props.style}>
+        <RandomNextGameCard key="r1" go={this.props.go} />
+        <RandomNextGameCard key="r2" go={this.props.go} />
+        <RandomNextGameCard key="r3" go={this.props.go} />
+        <RandomNextGameCard key="r4" go={this.props.go} />
+      </div>
+    );
+  }
+}
+
+class RandomNextGameCard extends React.Component {
+  render() {
+    let gameIndex = Math.floor(Math.random() * itches.length);
+    let game = itches[gameIndex];
+    return <NextGameCard game={game} gameIndex={gameIndex} {...this.props} />;
+  }
+}
+
+class NextGameCard extends React.Component {
+  render() {
+    let size = this.props.size || 120;
+    return (
+      <div
+        onClick={() => {
+          this.props.go && this.props.go(this.props.game, this.props.gameIndex);
+        }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+        }}>
+        <img
+          src={this.props.game.coverImage}
+          height={size}
+          width={size}
+          style={{
+            height: size,
+            width: size,
+          }}
+        />
+        <h4>{this.props.game.name}</h4>
+        <h5>by {this.props.game.itchUsername}</h5>
+      </div>
+    );
   }
 }
 
@@ -214,6 +269,15 @@ class InstructionsOverlay extends React.Component {
         })}>
         <h1>{this.props.game.name}</h1>
         <h3>by {this.props.game.itchUsername}</h3>
+        <img
+          src={this.props.game.coverImage}
+          height={200}
+          width={200}
+          style={{
+            height: 200,
+            width: 200,
+          }}
+        />
         <Markdown source={this.props.game.instructionsMarkdown} />
       </div>
     );
