@@ -28,6 +28,9 @@ app.on('ready', () => {
     mainWindow.webContents.send('ihkeyup', ke);
     // mainWindow.webContents.send('ping', 'keyup!')
   });
+  iohook.on('keypress', (ke) => {
+    mainWindow.webContents.send('ihkeypress', ke);
+  })
   // iohook.on('mousewheel', eventHandler);
   // iohook.on('mousemove', eventHandler);
   // console.log('Try move your mouse or press any key');
@@ -44,9 +47,9 @@ function createWindow() {
   mainWindow = new BrowserWindow({ width: 800, height: 600, frame: false, titleBarStyle: 'hidden', });
   mainWindow.setFullScreen(true);
 
-  mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('ping', 'whoooooooh!')
-  })
+  // mainWindow.webContents.on('did-finish-load', () => {
+  //   mainWindow.webContents.send('ping', 'whoooooooh!')
+  // })
   
 
   // and load the index.html of the app.
