@@ -4,8 +4,7 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "postinstall": "electron-rebuild"
+    "start": "electron ."
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -44,6 +43,7 @@
     "electron-rebuild": "^1.8.2",
     "iohook": "^0.2.0",
     "react": "^16.4.2",
-    "react-dom": "^16.4.2"
+    "react-dom": "^16.4.2",
+    "react-markdown": "^3.4.1"
   }
 }

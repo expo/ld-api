@@ -1,6 +1,7 @@
 let React = require('react');
+let Markdown = require('react-markdown');
 
-let games = require('./games');
+let itches = require('./itches');
 
 let { ipcRenderer } = require('electron');
 
@@ -64,8 +65,10 @@ class Intro extends React.Component {
             fontSize: 30,
             padding: 15,
           }}>
-          Hit TAB to show instructions and to navigate to other games.<br />
-          Hit ENTER while holding tab to go to the next game.<br />
+          Hit TAB to show instructions and to navigate to other games.
+          <br />
+          Hit ENTER while holding tab to go to the next game.
+          <br />
         </p>
         <p
           style={{
@@ -83,8 +86,14 @@ class App extends React.Component {
   state = {
     startScreen: true,
     overlayShown: false,
-    gameIndex: 1,
+    gameIndex: this._randomGameIndex(),
   };
+
+  _randomGameIndex() {
+    let x = Math.floor(Math.random() * itches.length);
+    console.log('Picked ' + x);
+    return x;
+  }
 
   componentDidMount() {
     ipcRenderer.on('ihkeydown', (event, ke) => {
@@ -108,7 +117,8 @@ class App extends React.Component {
       }
       if (ke.keychar === 13 && this.state.overlayShown) {
         console.log('Switch games');
-        let gameIndex = (this.state.gameIndex + 1) % games.length;
+        // let gameIndex = (this.state.gameIndex + 1) % games.length;
+        let gameIndex = this._randomGameIndex();
         this.setState({ gameIndex });
       }
     });
@@ -125,7 +135,8 @@ class App extends React.Component {
       );
     }
     let gameIndex = this.state.gameIndex;
-    let game = games[gameIndex];
+    // let game = games[gameIndex];
+    let game = itches[gameIndex];
     return (
       <div
         style={{
@@ -155,12 +166,11 @@ class App extends React.Component {
         {/* ))} */}
         {this.state.overlayShown && (
           <InstructionsOverlay
+            game={game}
             style={{
               position: 'absolute',
               zIndex: 20,
               backgroundColor: 'orange',
-              width: 250,
-              height: 500,
               top: 0,
               left: 0,
             }}
@@ -168,7 +178,9 @@ class App extends React.Component {
         )}
         {this.state.overlayShown && (
           <NextOverlay
+            game={game}
             style={{
+              fontFamily: 'Sansation-Light',
               position: 'absolute',
               zIndex: 30,
               backgroundColor: 'aliceblue',
@@ -192,7 +204,19 @@ class NextOverlay extends React.Component {
 
 class InstructionsOverlay extends React.Component {
   render() {
-    return <div style={this.props.style}>These are some instructions</div>;
+    return (
+      <div
+        style={Object.assign({}, this.props.style, {
+          fontFamily: 'Sansation-Light',
+          width: '35%',
+          height: '100%',
+          padding: 10,
+        })}>
+        <h1>{this.props.game.name}</h1>
+        <h3>by {this.props.game.itchUsername}</h3>
+        <Markdown source={this.props.game.instructionsMarkdown} />
+      </div>
+    );
   }
 }
 
@@ -208,12 +232,12 @@ class Game extends React.Component {
           zIndex: 1 + 5 * this.props.active,
           display: this.props.active ? 'block' : 'none',
         }}
-        title={this.props.game.name + ' by ' + this.props.game.author}
+        title={this.props.game.name + ' by ' + this.props.game.itchUsername}
         ref="iframe"
         mozallowfullscreen="true"
         // allow="autoplay; fullscreen; geolocation; microphone; camera; midi"
         frameBorder="0"
-        src={'https:' + this.props.game.embedUrl}
+        src={'https:' + this.props.game.itchEmbedUrl}
         msallowfullscreen="true"
         scrolling="no"
         allowFullScreen="true"
