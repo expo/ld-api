@@ -1,0 +1,10 @@
+version: 1.0.0
+files:
+  - url: scratcher-1.0.0-mac.zip
+    sha512: AU7lVEF3CU9QgGQzUclpehmslrQA/Yb7FSWY85q2n6aIAm/69+UTMelEksT8+ccZOI7BU88Yb53vMgXMXog+ug==
+  - url: scratcher-1.0.0.dmg
+    sha512: 5a6T1snKd60Ks6oM7YTt82ZB+7KAif+Rx78qN0ygnJkL4gcAD5kRaCRaNV0Nim9/T1zP0tZSBVVnhoWXldLuKQ==
+    size: 52814250
+path: scratcher-1.0.0-mac.zip
+sha512: AU7lVEF3CU9QgGQzUclpehmslrQA/Yb7FSWY85q2n6aIAm/69+UTMelEksT8+ccZOI7BU88Yb53vMgXMXog+ug==
+releaseDate: '2018-08-13T23:41:52.141Z'

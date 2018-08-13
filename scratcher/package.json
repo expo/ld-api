@@ -4,7 +4,35 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "build --dir",
+    "dist": "build"
+  },
+  "build": {
+    "appId": "io.expo.ghost.scratcher",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "NSIS"
+    }
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -37,10 +65,10 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^2.0.0",
+    "electron-builder": "^20.27.1",
     "node-abi": "^2.4.3"
   },
   "dependencies": {
-    "electron-rebuild": "^1.8.2",
     "iohook": "^0.2.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",

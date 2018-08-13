@@ -1,7 +1,7 @@
 let React = require('react');
 let Markdown = require('react-markdown');
 
-let itches = require('../itches42b');
+let itches = require('./itches42b');
 
 let { ipcRenderer } = require('electron');
 
@@ -85,7 +85,7 @@ class Intro extends React.Component {
 class App extends React.Component {
   state = {
     startScreen: true,
-    overlayShown: false,
+    overlayShown: true,
     gameIndex: this._randomGameIndex(),
   };
 
