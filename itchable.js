@@ -110,6 +110,12 @@ async function mainAsync() {
   console.log(JSON.stringify(itches));
 }
 
-mainAsync();
+if (module === require.main) {
+  mainAsync();
+}
+
+module.exports = {
+  mainAsync,
+};
 
 // console.log(links);

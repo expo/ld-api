@@ -1,7 +1,7 @@
 let React = require('react');
 let Markdown = require('react-markdown');
 
-let itches = require('../itches');
+let itches = require('../itches42b');
 
 let { ipcRenderer } = require('electron');
 

@@ -1,4 +1,4 @@
-let itches = require('./itches');
+let itches = require('./itches42');
 let itches2 = [];
 
 for (let itch of itches) {
