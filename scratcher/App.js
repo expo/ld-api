@@ -1,3 +1,5 @@
+let url = require('url');
+
 let React = require('react');
 let Markdown = require('react-markdown');
 
@@ -213,6 +215,7 @@ class ScratcherApp extends React.Component {
               backgroundColor: 'orange',
               top: 0,
               left: 0,
+              flex: 1,
             }}
           />
         )}
@@ -288,8 +291,46 @@ class NextGameCard extends React.Component {
   }
 }
 
+class HTMLComment extends React.Component {
+  componentDidMount() {
+    let el = ReactDOM.findDOMNode(this);
+    ReactDOM.unmountComponentAtNode(el);
+    el.outerHTML = this.createComment();
+  }
+
+  createComment() {
+    let text = this.props.text;
+
+    if (this.props.trim) {
+      text = text.trim();
+    }
+
+    return `<!-- ${text} -->`;
+  }
+
+  render() {
+    return <div />;
+  }
+}
+
+class MarkdownImage extends React.Component {
+  render() {
+    return (
+      <img
+        style={{
+          maxWidth: '85%',
+          margin: 10,
+        }}
+        src={this.props.src}
+        alt={this.props.alt}
+      />
+    );
+  }
+}
+
 class InstructionsOverlay extends React.Component {
   render() {
+    let ldUrl = "https://ldjam.com/events/ludum-dare/42/" + this.props.game.ld.slug;
     return (
       <div
         style={Object.assign({}, this.props.style, {
@@ -298,7 +339,14 @@ class InstructionsOverlay extends React.Component {
           height: '100%',
           padding: 10,
         })}>
+        <HTMLComment text={JSON.stringify(this.props.game)} />
         <h1>{this.props.game.name}</h1>
+        <p>
+          <a href={ldUrl}>{ldUrl}</a>
+        </p>
+        <p>
+          <a href={this.props.game.itchUrl}>{this.props.game.itchUrl}</a>
+        </p>
         <h3>by {this.props.game.itchUsername}</h3>
         <img
           src={this.props.game.coverImage}
@@ -309,7 +357,27 @@ class InstructionsOverlay extends React.Component {
             width: 200,
           }}
         />
-        <Markdown source={this.props.game.instructionsMarkdown} />
+        <Markdown
+          source={this.props.game.instructionsMarkdown}
+          renderers={{
+            image: MarkdownImage,
+          }}
+          transformImageUri={(uri) => {
+            if (!uri) {
+              return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==';
+            }
+            let imageUrl = url.resolve('https://static.jam.vg', uri.replace(/^\/+/, '/'));
+            console.log({
+              imageUrl,
+              itchUrl: this.props.game.itchUrl,
+              uri,
+            });
+            return imageUrl;
+          }}
+          transformLinkUri={(uri) => {
+            return url.resolve(this.props.game.itchUrl, uri);
+          }}
+        />
       </div>
     );
   }
