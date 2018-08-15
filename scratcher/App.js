@@ -3,7 +3,12 @@ let url = require('url');
 let React = require('react');
 let Markdown = require('react-markdown');
 
-let { shell } = require('electron');
+let electron = require('electron');
+let { shell, screen } = electron;
+let primaryDisplay = screen.getPrimaryDisplay();
+let dimensions = primaryDisplay.size;
+
+// let Api = require('./Api');
 
 // let itches = require('./itches42b');
 let itches;
@@ -153,6 +158,7 @@ class ScratcherApp extends React.Component {
       // console.log("keychar=", ke.keychar, ke);
       if (ke.keychar === 13) {
         // console.log('ENTER');
+        switchGamesKeyPressed = true;
       }
 
       if (ke.keychar === 92) {
@@ -401,7 +407,7 @@ class InstructionsOverlay extends React.Component {
             return imageUrl;
           }}
           transformLinkUri={(uri) => {
-            return url.resolve(this.props.game.itchUrl || "", uri || "");
+            return url.resolve(this.props.game.itchUrl || '', uri || '');
           }}
         />
       </div>
@@ -417,18 +423,18 @@ class Game extends React.Component {
   componentDidMount() {
     console.log('gameIframe', this._iframeRef);
     window._gameIframe = this._iframeRef.current;
-    this._resizeCanvas();
+    // this._resizeCanvas();
     window._gameComponent = this;
-    window._gameIframe.contentDocument.addEventListener("DOMContentLoaded", () => {
-      console.log("content loaded?");
-      this._resizeCanvas();
+    window._gameIframe.contentDocument.addEventListener('DOMContentLoaded', () => {
+      console.log('content loaded?');
+      // this._resizeCanvas();
     });
   }
 
   _resizeCanvas() {
     let win = this._iframeRef.current.contentWindow;
-    let winHeight = win.innerHeight;
-    let winWidth = win.innerWidth;
+    let winHeight = dimensions.height; // win.innerHeight;
+    let winWidth = dimensions.width; // win.innerWidth;
     let doc = this._iframeRef.current.contentDocument;
     let canvasElements = doc.getElementsByTagName('canvas');
     console.log('canvasElements', canvasElements);
@@ -444,7 +450,6 @@ class Game extends React.Component {
       doc.body.style.margin = '0px 0px 0px 0px';
       doc.body.style.padding = '0px 0px 0px 0px';
     }
-
   }
 
   render() {
