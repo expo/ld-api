@@ -1,9 +1,39 @@
 let React = require('react');
 let Markdown = require('react-markdown');
 
-let itches = require('./itches42b');
+// let itches = require('./itches42b');
+let itches;
 
 let { ipcRenderer } = require('electron');
+
+class App extends React.Component {
+  state = {
+    loading: true,
+  };
+  _loadDataAsync = async () => {
+    let response = await fetch('http://ccheever.com/scratcher/itches42b.json');
+    itches = await response.json();
+    this.setState({ loading: false });
+  };
+  componentDidMount() {
+    this._loadDataAsync();
+  }
+  render() {
+    if (this.state.loading) {
+      return (
+        <p
+          style={{
+            fontFamily: 'RGO-SemiBold',
+            fontSize: 48,
+          }}>
+          Loading data...
+        </p>
+      );
+    } else {
+      return <ScratcherApp />;
+    }
+  }
+}
 
 class Intro extends React.Component {
   advance() {
@@ -82,9 +112,10 @@ class Intro extends React.Component {
   }
 }
 
-class App extends React.Component {
+class ScratcherApp extends React.Component {
   state = {
     startScreen: true,
+    loadingData: true,
     overlayShown: true,
     gameIndex: this._randomGameIndex(),
   };
