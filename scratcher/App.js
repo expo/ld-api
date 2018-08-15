@@ -3,6 +3,8 @@ let url = require('url');
 let React = require('react');
 let Markdown = require('react-markdown');
 
+let { shell } = require('electron');
+
 // let itches = require('./itches42b');
 let itches;
 
@@ -123,6 +125,7 @@ class ScratcherApp extends React.Component {
   };
 
   _randomGameIndex() {
+    // return 626; // Sacculous saga. Link problems
     let x = Math.floor(Math.random() * itches.length);
     console.log('Picked ' + x);
     return x;
@@ -146,14 +149,20 @@ class ScratcherApp extends React.Component {
 
     ipcRenderer.on('ihkeypress', (event, ke) => {
       // console.log('keypress:', ke);
+      let switchGamesKeyPressed = false;
+      // console.log("keychar=", ke.keychar, ke);
       if (ke.keychar === 13) {
         // console.log('ENTER');
+      }
+
+      if (ke.keychar === 92) {
+        switchGamesKeyPressed = true;
       }
 
       if (ke.keychar === 9) {
         this.setState({ overlayShown: !this.state.overlayShown });
       }
-      if (ke.keychar === 13 && this.state.overlayShown) {
+      if (switchGamesKeyPressed && this.state.overlayShown) {
         console.log('Switch games');
         // let gameIndex = (this.state.gameIndex + 1) % games.length;
         let gameIndex = this._randomGameIndex();
@@ -328,9 +337,25 @@ class MarkdownImage extends React.Component {
   }
 }
 
+class MarkdownLink extends React.Component {
+  render() {
+    return (
+      <a
+        href={this.props.href}
+        onClick={(e) => {
+          shell.openExternal(this.props.href);
+          e.preventDefault();
+          return true;
+        }}
+        {...this.props}
+      />
+    );
+  }
+}
+
 class InstructionsOverlay extends React.Component {
   render() {
-    let ldUrl = "https://ldjam.com/events/ludum-dare/42/" + this.props.game.ld.slug;
+    let ldUrl = 'https://ldjam.com/events/ludum-dare/42/' + this.props.game.ld.slug;
     return (
       <div
         style={Object.assign({}, this.props.style, {
@@ -342,10 +367,10 @@ class InstructionsOverlay extends React.Component {
         <HTMLComment text={JSON.stringify(this.props.game)} />
         <h1>{this.props.game.name}</h1>
         <p>
-          <a href={ldUrl}>{ldUrl}</a>
+          <MarkdownLink href={ldUrl}>{ldUrl}</MarkdownLink>
         </p>
         <p>
-          <a href={this.props.game.itchUrl}>{this.props.game.itchUrl}</a>
+          <MarkdownLink href={this.props.game.itchUrl}>{this.props.game.itchUrl}</MarkdownLink>
         </p>
         <h3>by {this.props.game.itchUsername}</h3>
         <img
@@ -361,21 +386,22 @@ class InstructionsOverlay extends React.Component {
           source={this.props.game.instructionsMarkdown}
           renderers={{
             image: MarkdownImage,
+            link: MarkdownLink,
           }}
           transformImageUri={(uri) => {
             if (!uri) {
               return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==';
             }
             let imageUrl = url.resolve('https://static.jam.vg', uri.replace(/^\/+/, '/'));
-            console.log({
-              imageUrl,
-              itchUrl: this.props.game.itchUrl,
-              uri,
-            });
+            // console.log({
+            //   imageUrl,
+            //   itchUrl: this.props.game.itchUrl,
+            //   uri,
+            // });
             return imageUrl;
           }}
           transformLinkUri={(uri) => {
-            return url.resolve(this.props.game.itchUrl, uri);
+            return url.resolve(this.props.game.itchUrl || "", uri || "");
           }}
         />
       </div>
@@ -384,19 +410,56 @@ class InstructionsOverlay extends React.Component {
 }
 
 class Game extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this._iframeRef = React.createRef();
+  }
+  componentDidMount() {
+    console.log('gameIframe', this._iframeRef);
+    window._gameIframe = this._iframeRef.current;
+    this._resizeCanvas();
+    window._gameComponent = this;
+    window._gameIframe.contentDocument.addEventListener("DOMContentLoaded", () => {
+      console.log("content loaded?");
+      this._resizeCanvas();
+    });
+  }
+
+  _resizeCanvas() {
+    let win = this._iframeRef.current.contentWindow;
+    let winHeight = win.innerHeight;
+    let winWidth = win.innerWidth;
+    let doc = this._iframeRef.current.contentDocument;
+    let canvasElements = doc.getElementsByTagName('canvas');
+    console.log('canvasElements', canvasElements);
+    if (canvasElements.length > 0) {
+      let ce = canvasElements[0];
+      ce.parentElement.removeChild(ce);
+      doc.body.appendChild(ce);
+      ce.style.position = 'absolute';
+      ce.style.top = '0px';
+      ce.style.left = '0px';
+      ce.style.width = '100%';
+      ce.style.height = '100%';
+      doc.body.style.margin = '0px 0px 0px 0px';
+      doc.body.style.padding = '0px 0px 0px 0px';
+    }
+
+  }
+
   render() {
     if (this.props.active) {
       console.log('active = ' + this.props.game.name);
     }
     return (
       <iframe
+        ref={this._iframeRef}
         style={{
           ...this.props.style,
           zIndex: 1 + 5 * this.props.active,
           display: this.props.active ? 'block' : 'none',
         }}
         title={this.props.game.name + ' by ' + this.props.game.itchUsername}
-        ref="iframe"
         mozallowfullscreen="true"
         // allow="autoplay; fullscreen; geolocation; microphone; camera; midi"
         frameBorder="0"

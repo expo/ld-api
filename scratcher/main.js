@@ -8,13 +8,11 @@ let mainWindow;
 // iohooks since we don't want to rely on focus or whatever
 let iohook = require('iohook');
 
-let {ipcMain} = require('electron')
+let { ipcMain } = require('electron');
 
 function eventHandler(event) {
   console.log(event);
 }
-
-
 
 app.on('ready', () => {
   iohook.start();
@@ -31,7 +29,7 @@ app.on('ready', () => {
   iohook.on('keypress', (ke) => {
     // console.log("keypress", ke);
     mainWindow.webContents.send('ihkeypress', ke);
-  })
+  });
   // iohook.on('mousewheel', eventHandler);
   // iohook.on('mousemove', eventHandler);
   // console.log('Try move your mouse or press any key');
@@ -42,16 +40,22 @@ app.on('before-quit', () => {
   iohook.stop();
 });
 
-
 function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 800, height: 600, frame: false, titleBarStyle: 'hidden', });
+  mainWindow = new BrowserWindow({
+    // width: 800,
+    // height: 600,
+    frame: false,
+    titleBarStyle: 'hidden',
+    // webPreferences: {
+    //   preload: "console.log('preloaded');"
+    // }
+  });
   mainWindow.setFullScreen(true);
 
   // mainWindow.webContents.on('did-finish-load', () => {
   //   mainWindow.webContents.send('ping', 'whoooooooh!')
   // })
-  
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html');

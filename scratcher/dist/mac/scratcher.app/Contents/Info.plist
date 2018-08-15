@@ -45,6 +45,6 @@
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2018 GitHub</string>
     <key>AsarIntegrity</key>
-    <string>{"checksums":{"app.asar":"oJkrVl5uVCRW14txM2TVnqyi6/ZdAq/2+AHxEhQAH7Ufl1jVBVhrD7SkLeosWv2GPDAd3U5rGGVfpEZ4nKzXIg==","electron.asar":"G6CeEr2Mc2A4mUGGXftYgaVopyl4gOfGAooF6M5tgQd9yZsAK/3gSNKSOLtXa/OpN/fSavzmtnW6/aLgmmAjAg=="}}</string>
+    <string>{"checksums":{"app.asar":"WXJpNh+SxGzib1C36AMGpiygNdUn3X7sgvaRDNk78QZ/G8B/HWNKzLXnRx8htqgo7nrRRC4Fc42GdJDMPDBmYQ==","electron.asar":"G6CeEr2Mc2A4mUGGXftYgaVopyl4gOfGAooF6M5tgQd9yZsAK/3gSNKSOLtXa/OpN/fSavzmtnW6/aLgmmAjAg=="}}</string>
   </dict>
 </plist>
